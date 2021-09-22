@@ -1,47 +1,42 @@
 const video = document.getElementById("video");
-const btn = document.getElementById("btn");
+const startBtn = document.getElementById("start-btn");
+const stopBtn = document.getElementById("stop-btn");
 
-// console.log(video.src);
+//Prompt user to select video stream, pass to video element, then play
+async function selectMediaStream() {
+  try {
+    const mediaStream = await navigator.mediaDevices.getDisplayMedia();
+    video.srcObject = mediaStream;
+    video.onloadedmetadata = () => {
+      video.play();
+    };
+  } catch (err) {
+    console.error("Something went wrong! " + err);
+  }
+}
 
-// Capturing Stream
-// async function startCapture() {
-//   //   let captureStream = null;
-//   try {
-//     video.src = await navigator.mediaDevices.getDisplayMedia();
-//   } catch (err) {
-//     console.error("Error: " + err);
-//   }
-//   //   return captureStream;
-// }
+// Start button Event Listener
+startBtn.addEventListener("click", async () => {
+  // Disable button
+  startBtn.disabled = true;
+  startBtn.hidden = true;
+  stopBtn.hidden = false;
 
-// console.log(video.src);
+  // Start Picture in Picture
+  await video.requestPictureInPicture();
 
-// Enabling Picture in Picture
-// if ("pictureInPictureEnabled" in document) {
-//   pipBtn.classList.remove("hidden");
-//   pipBtn.disabled = false;
+  // Reset button
+  startBtn.disabled = false;
+});
 
-//   pipBtn.addEventListener("click", () => {
-//     try {
-//       video.requestPictureInPicture();
-//       pipBtn.textContent = "Exit Pic in Pic";
-//     } catch (error) {
-//       console.log("Something went wrong!");
-//     }
-//   });
-// }
-
-// // Closing Picture in Picture
-// pipBtn.addEventListener("click", () => {
-//   if (document.pictureInPictureElement) {
-//     try {
-//       document.exitPictureInPicture();
-//       pipBtn.textContent = "Enter Pic in Pic";
-//     } catch (error) {
-//       console.log("Something went wrong!");
-//     }
-//   }
-// });
+// Stop button Event Listener
+stopBtn.addEventListener("click", () => {
+  if ("pictureInPictureEnabled" in document) {
+    document.exitPictureInPicture();
+    startBtn.hidden = false;
+    stopBtn.hidden = true;
+  }
+});
 
 // onLoad
-// startCapture();
+selectMediaStream();
